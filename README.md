@@ -34,7 +34,3 @@ This project uses GitHub Actions for automatic deployment to GitHub Pages.
 1. Push changes to the `main` branch
 2. GitHub Actions will automatically deploy to GitHub Pages
 3. Enable GitHub Pages in repository Settings → Pages → Source: GitHub Actions
-
-## License
-
-© Palau Food Nutrition
