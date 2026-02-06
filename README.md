@@ -53,9 +53,18 @@ Based on NASEM 2023 Linear Regression Equations.
 - **Lactation (0-6m)**: +400 kcal
 
 ### 3. Macronutrient Distribution (AMDR)
-- **Maintenance**: Protein 20%, Fat 30%, Carbs 50%
-- **Weight Loss**: Protein 35%, Fat 25%, Carbs 40%
-- **Muscle Gain**: Protein 25%, Fat 25%, Carbs 50%
+- **Target Percentages by Goal**:
+  - **Maintenance**: Protein 20%, Fat 30%, Carbs 50%
+  - **Weight Loss**: Protein 35%, Fat 25%, Carbs 40%
+  - **Muscle Gain**: Protein 25%, Fat 25%, Carbs 50%
+
+- **AMDR Gram Range Formulas**:
+  The displayed range is based on the NASEM Acceptable Macronutrient Distribution Ranges:
+  - **Protein Range (g)**: `(Target TDEE × 0.10) / 4` to `(Target TDEE × 0.35) / 4`
+  - **Fat Range (g)**: `(Target TDEE × 0.20) / 9` to `(Target TDEE × 0.35) / 9`
+  - **Carbs Range (g)**: `(Target TDEE × 0.45) / 4` to `(Target TDEE × 0.65) / 4`
+
+*(Note: Target TDEE is adjusted based on goal: Loss = TDEE-500, Gain = TDEE+300, Maintain = TDEE)*
 
 ### 4. Unit Conversions
 - **Weight**: `1 kg = 2.20462 lb`
