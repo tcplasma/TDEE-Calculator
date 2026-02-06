@@ -49,8 +49,8 @@ Based on NASEM 2023 Linear Regression Equations.
   - Very Active: `511.83 - 7.01A + 9.07H + 12.56W`
 
 #### Physiological Adjustments
-- **Pregnancy**: +340 kcal (T2), +450 kcal (T3)
-- **Lactation (0-6m)**: +400 kcal
+- ~~Pregnancy**: +340 kcal (T2), +450 kcal (T3)~~
+- ~~Lactation (0-6m)**: +400 kcal~~
 
 ### 3. Macronutrient Distribution (AMDR)
 - **Target Percentages by Goal**:
