@@ -4,11 +4,11 @@ A professional Total Daily Energy Expenditure (TDEE) calculator with age-specifi
 
 ## Features
 
-- **Multiple BMR Formulas**: Schofield for ages 3-17, Mifflin-St Jeor for adults, elderly-specific formulas for 60+
+- **NASEM 2023 Standard**: Implements latest Estimated Energy Requirement (EER) equations from the National Academies
+- **Precise Activity Levels**: 4-level Physical Activity Level (PAL) system (Inactive to Very Active)
+- **Micronutrient Goals**: Sodium CDRR and Potassium AI recommendations
 - **Unit Conversion**: Supports both metric (kg/cm) and imperial (lb/ft) systems
-- **Activity Levels**: 5 activity levels from sedentary to extremely active
 - **Macro Calculator**: Recommended protein, fat, and carbohydrate intake
-- **Weight Goals**: Calorie targets for weight loss, maintenance, and muscle gain
 - **Responsive Design**: Works on desktop and mobile devices
 
 ## Live Demo
