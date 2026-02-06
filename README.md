@@ -17,7 +17,7 @@ A professional Total Daily Energy Expenditure (TDEE) calculator with age-specifi
 
 ## Live Demo
 
-Visit: [https://YOUR_USERNAME.github.io/TDEE/](https://YOUR_USERNAME.github.io/TDEE/)
+Visit: [https://tcplasma.github.io/TDEE-Calculator/](https://tcplasma.github.io/TDEE-Calculator/)
 
 ## Technology Stack
 
@@ -31,6 +31,6 @@ This project uses GitHub Actions for automatic deployment to GitHub Pages.
 
 ### To Deploy
 
-1. Push changes to the `main` branch
+1. Push changes to the `master` branch
 2. GitHub Actions will automatically deploy to GitHub Pages
 3. Enable GitHub Pages in repository Settings → Pages → Source: GitHub Actions
