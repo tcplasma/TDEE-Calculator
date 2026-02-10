@@ -102,6 +102,7 @@
       grid-template-columns: 1.2fr 1fr;
       gap: 3rem;
       padding: 3rem;
+      align-items: end;
     }
 
     @media (max-width: 900px) {
@@ -506,6 +507,40 @@
             </select>
           </div>
         </div>
+
+        <!-- Nutritional Guidelines (bottom of left column) -->
+        <div
+          style="margin-top: 2rem; background: #f0fff4; padding: 1.5rem; border-radius: 20px; border: 1px dashed #48bb78;">
+          <h3
+            style="color: #2f855a; font-size: 0.85rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;">
+            Nutritional Guidelines<br><span style="font-size: 0.7rem; font-weight: 400;">(NASEM / WHO)</span></h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+            <div style="text-align: center; padding: 0.5rem; background: rgba(255,255,255,0.6); border-radius: 10px;">
+              <div style="font-size: 0.6rem; color: #2f855a; font-weight: 700; text-transform: uppercase;">Sodium Max
+              </div>
+              <div id="sodiumValue" style="font-weight: 700; color: #276749; font-size: 0.9rem;">--</div>
+              <div style="font-size: 0.5rem; color: #718096;">WHO &lt; 2,000 mg</div>
+            </div>
+            <div style="text-align: center; padding: 0.5rem; background: rgba(255,255,255,0.6); border-radius: 10px;">
+              <div style="font-size: 0.6rem; color: #2f855a; font-weight: 700; text-transform: uppercase;">Potassium Min
+              </div>
+              <div id="potassiumValue" style="font-weight: 700; color: #276749; font-size: 0.9rem;">--</div>
+              <div style="font-size: 0.5rem; color: #718096;">NASEM AI</div>
+            </div>
+            <div style="text-align: center; padding: 0.5rem; background: rgba(255,255,255,0.6); border-radius: 10px;">
+              <div style="font-size: 0.6rem; color: #2f855a; font-weight: 700; text-transform: uppercase;">Free Sugars
+              </div>
+              <div id="sugarValue5" style="font-weight: 700; color: #276749; font-size: 0.9rem;">--</div>
+              <div style="font-size: 0.5rem; color: #718096;">WHO &lt; 5% TDEE</div>
+            </div>
+            <div style="text-align: center; padding: 0.5rem; background: rgba(255,255,255,0.6); border-radius: 10px;">
+              <div style="font-size: 0.6rem; color: #2f855a; font-weight: 700; text-transform: uppercase;">Added Sugars
+              </div>
+              <div id="sugarValue10" style="font-weight: 700; color: #276749; font-size: 0.9rem;">--</div>
+              <div style="font-size: 0.5rem; color: #718096;">WHO &lt; 10% TDEE</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="results-section">
@@ -544,78 +579,19 @@
           </button>
         </div>
 
-        <div class="macros-donut"
-          style="background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-          <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-main); font-weight: 600;">Macro
-            Distribution</h3>
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 2rem;">
-            <div style="position: relative;">
-              <svg viewBox="0 0 36 36"
-                style="width: 160px; height: 160px; transform: rotate(-90deg); filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));">
-                <circle r="16" cx="18" cy="18" fill="transparent" stroke="#f1f5f9" stroke-width="3.5"></circle>
-                <circle r="16" cx="18" cy="18" fill="transparent" stroke="var(--primary)" stroke-width="3.5"
-                  stroke-dasharray="0 100" id="pieCarbs"
-                  style="transition: stroke-dasharray 0.6s cubic-bezier(0.16, 1, 0.3, 1);"></circle>
-                <circle r="16" cx="18" cy="18" fill="transparent" stroke="var(--secondary)" stroke-width="3.5"
-                  stroke-dasharray="0 100" id="pieFat" style="transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);">
-                </circle>
-                <circle r="16" cx="18" cy="18" fill="transparent" stroke="var(--accent-red)" stroke-width="3.5"
-                  stroke-dasharray="0 100" id="pieProtein" style="transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);">
-                </circle>
-              </svg>
-              <div id="ratioText"
-                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.85rem; font-weight: 700; color: var(--text-main); text-align: center; line-height: 1.4;">
-                --
-              </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
-              <div
-                style="padding: 1rem; background: #fff5f5; border-radius: 12px; border-left: 4px solid var(--accent-red);">
-                <div
-                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                  <div style="font-size: 0.75rem; color: #c53030; font-weight: 700; text-transform: uppercase;">Protein
-                  </div>
-                  <div style="font-size: 0.65rem; color: #e53e3e; font-weight: 600;">AMDR: 10-35%</div>
-                </div>
-                <div id="proteinValue" style="font-weight: 700; font-size: 1.1rem; color: #2d3748;">--</div>
-              </div>
-              <div
-                style="padding: 1rem; background: #fffaf0; border-radius: 12px; border-left: 4px solid var(--secondary);">
-                <div
-                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                  <div style="font-size: 0.75rem; color: #b7791f; font-weight: 700; text-transform: uppercase;">Fat
-                  </div>
-                  <div style="font-size: 0.65rem; color: #d69e2e; font-weight: 600;">AMDR: 20-35%</div>
-                </div>
-                <div id="fatValue" style="font-weight: 700; font-size: 1.1rem; color: #2d3748;">--</div>
-              </div>
-              <div
-                style="padding: 1rem; background: #ebf8ff; border-radius: 12px; border-left: 4px solid var(--primary); grid-column: 1 / -1;">
-                <div
-                  style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                  <div style="font-size: 0.75rem; color: #2b6cb0; font-weight: 700; text-transform: uppercase;">
-                    Carbohydrates</div>
-                  <div style="font-size: 0.65rem; color: #3182ce; font-weight: 600;">AMDR: 45-65%</div>
-                </div>
-                <div id="carbsValue" style="font-weight: 700; font-size: 1.1rem; color: #2d3748;">--</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <!-- AMDR Pie Chart -->
         <div
-          style="margin-top: 2rem; background: #f0fff4; padding: 1.5rem; border-radius: 20px; border: 1px dashed #48bb78;">
+          style="margin-top: 2rem; background: white; padding: 1.5rem; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
           <h3
-            style="color: #2f855a; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; text-align: center;">
-            Micronutrient Goals (NASEM CDRR/AI)</h3>
-          <div style="display: flex; gap: 1rem; justify-content: center;">
-            <div style="flex: 1; text-align: center; border-right: 1px solid #c6f6d5;">
-              <div style="font-size: 0.7rem; color: #2f855a; font-weight: 600;">Sodium Max</div>
-              <div id="sodiumValue" style="font-weight: 700; color: #276749;">--</div>
-            </div>
-            <div style="flex: 1; text-align: center;">
-              <div style="font-size: 0.7rem; color: #2f855a; font-weight: 600;">Potassium Min</div>
-              <div id="potassiumValue" style="font-weight: 700; color: #276749;">--</div>
+            style="text-align: center; margin-bottom: 1rem; color: var(--text-main); font-weight: 600; font-size: 0.95rem;">
+            Macronutrient Distribution (AMDR)</h3>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <svg viewBox="0 0 220 220" id="pieChartSvg"
+              style="width: 280px; height: 280px; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.08));">
+            </svg>
+            <div style="font-size: 0.7rem; color: #718096; text-align: center; line-height: 1.5;">
+              <strong style="color: var(--text-main);">Target (Maintenance)</strong><br>
+              Protein 20% · Fat 30% · Carbs 50%
             </div>
           </div>
         </div>
@@ -783,22 +759,51 @@
       return tee;
     }
 
-    function updatePieChart(p, f, c) {
-      const total = p + f + c;
-      const pp = Math.round(p / total * 100);
-      const fp = Math.round(f / total * 100);
-      const cp = 100 - pp - fp;
+    function updatePieChart(tdee) {
+      // Filled SVG Pie Chart with AMDR ranges on slices
+      // NASEM AMDR: Protein 10-35%, Fat 20-35%, Carbs 45-65%
+      // Target (Maintenance): P 20%, F 30%, C 50%
+      const cx = 110, cy = 110, r = 90;
 
-      // Circumference = 2 * PI * r = 2 * 3.1416 * 16 ≈ 100.53, we use 100 for simplicity
-      const circumference = 100.53;
+      // Compute AMDR gram ranges from TDEE
+      const pLow = Math.round(tdee * 0.10 / 4), pHigh = Math.round(tdee * 0.35 / 4);
+      const fLow = Math.round(tdee * 0.20 / 9), fHigh = Math.round(tdee * 0.35 / 9);
+      const cLow = Math.round(tdee * 0.45 / 4), cHigh = Math.round(tdee * 0.65 / 4);
 
-      document.getElementById('pieCarbs').style.strokeDasharray = `${cp * circumference / 100} ${circumference}`;
-      document.getElementById('pieFat').style.strokeDasharray = `${fp * circumference / 100} ${circumference}`;
-      document.getElementById('pieFat').style.strokeDashoffset = `-${cp * circumference / 100}`;
-      document.getElementById('pieProtein').style.strokeDasharray = `${pp * circumference / 100} ${circumference}`;
-      document.getElementById('pieProtein').style.strokeDashoffset = `-${(cp + fp) * circumference / 100}`;
+      const slices = [
+        { pct: 0.50, color: '#0099ff', label: 'Carbs', range: `${cLow}-${cHigh}g`, amdr: '45-65%', textColor: 'white' },
+        { pct: 0.30, color: '#E4C859', label: 'Fat', range: `${fLow}-${fHigh}g`, amdr: '20-35%', textColor: '#2d3748' },
+        { pct: 0.20, color: '#ff6b6b', label: 'Protein', range: `${pLow}-${pHigh}g`, amdr: '10-35%', textColor: 'white' }
+      ];
 
-      document.getElementById('ratioText').innerHTML = `<strong>${pp}%</strong> P<br><strong>${fp}%</strong> F<br><strong>${cp}%</strong> C`;
+      let startAngle = -Math.PI / 2;
+      let svg = '';
+
+      slices.forEach(s => {
+        const endAngle = startAngle + s.pct * 2 * Math.PI;
+        const largeArc = s.pct > 0.5 ? 1 : 0;
+
+        const x1 = cx + r * Math.cos(startAngle);
+        const y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle);
+        const y2 = cy + r * Math.sin(endAngle);
+
+        svg += `<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${largeArc},1 ${x2.toFixed(2)},${y2.toFixed(2)} Z" fill="${s.color}" />`;
+
+        // Labels at midpoint of arc
+        const midAngle = (startAngle + endAngle) / 2;
+        const labelR = r * 0.58;
+        const lx = cx + labelR * Math.cos(midAngle);
+        const ly = cy + labelR * Math.sin(midAngle);
+
+        svg += `<text x="${lx.toFixed(1)}" y="${(ly - 8).toFixed(1)}" text-anchor="middle" fill="${s.textColor}" font-size="11" font-weight="700" font-family="Outfit,sans-serif">${s.label}</text>`;
+        svg += `<text x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="${s.textColor}" font-size="9" font-weight="600" font-family="Outfit,sans-serif">${s.amdr}</text>`;
+        svg += `<text x="${lx.toFixed(1)}" y="${(ly + 17).toFixed(1)}" text-anchor="middle" fill="${s.textColor}" font-size="9" font-weight="700" font-family="Outfit,sans-serif">${s.range}</text>`;
+
+        startAngle = endAngle;
+      });
+
+      document.getElementById('pieChartSvg').innerHTML = svg;
     }
 
 
@@ -841,42 +846,23 @@
       document.getElementById('maintainValue').textContent = Math.round(tdee).toLocaleString();
       document.getElementById('bulkValue').textContent = `${Math.round(tdee + 250).toLocaleString()} - ${Math.round(tdee + 500).toLocaleString()}`;
 
-      // Macros based on selected Goal
-      let targetTdee = tdee;
-      let pRatio, fRatio, cRatio;
+      // Pie chart shows AMDR ranges based on TDEE (Maintenance target: 20% P / 30% F / 50% C)
+      updatePieChart(tdee);
 
-      if (state.goal === 'cut') {
-        targetTdee = tdee - 500;
-        pRatio = 0.35; // Higher protein for muscle preservation
-        fRatio = 0.25;
-      } else if (state.goal === 'bulk') {
-        targetTdee = tdee + 300;
-        pRatio = 0.25;
-        fRatio = 0.25;
-      } else {
-        targetTdee = tdee;
-        pRatio = 0.20;
-        fRatio = 0.30;
-      }
-
-      cRatio = 1 - pRatio - fRatio;
-
-      const protein = Math.round((targetTdee * pRatio) / 4);
-      const fat = Math.round((targetTdee * fRatio) / 9);
-      const carbs = Math.round((targetTdee * cRatio) / 4);
-
-      document.getElementById('proteinValue').innerHTML = `${protein}g (${Math.round(pRatio * 100)}%) <span style="display:block; font-size: 0.65rem; color: #718096; font-weight: 500;">Range: ${Math.round(targetTdee * 0.10 / 4)}g - ${Math.round(targetTdee * 0.35 / 4)}g</span>`;
-      document.getElementById('fatValue').innerHTML = `${fat}g (${Math.round(fRatio * 100)}%) <span style="display:block; font-size: 0.65rem; color: #718096; font-weight: 500;">Range: ${Math.round(targetTdee * 0.20 / 9)}g - ${Math.round(targetTdee * 0.35 / 9)}g</span>`;
-      document.getElementById('carbsValue').innerHTML = `${carbs}g (${Math.round(cRatio * 100)}%) <span style="display:block; font-size: 0.65rem; color: #718096; font-weight: 500;">Range: ${Math.round(targetTdee * 0.45 / 4)}g - ${Math.round(targetTdee * 0.65 / 4)}g</span>`;
-
-      updatePieChart(targetTdee * pRatio, targetTdee * fRatio, targetTdee * cRatio);
-
-      // Micronutrients (NASEM 2019/2023)
-      const sodiumLimit = 2300;
+      // Micronutrients (NASEM + WHO)
+      // Sodium: WHO recommends < 2,000 mg/day (stricter than NASEM 2,300)
+      const sodiumLimit = 2000;
       let potassiumGoal = (age >= 19) ? (state.gender === 'male' ? 3400 : 2600) : 2300;
 
       document.getElementById('sodiumValue').textContent = `< ${sodiumLimit.toLocaleString()} mg`;
       document.getElementById('potassiumValue').textContent = `> ${potassiumGoal.toLocaleString()} mg`;
+
+      // Sugar: WHO recommends < 10% of TDEE (strong), < 5% (conditional)
+      // 1g sugar = 4 kcal
+      const sugar5 = Math.round(tdee * 0.05 / 4);
+      const sugar10 = Math.round(tdee * 0.10 / 4);
+      document.getElementById('sugarValue5').textContent = `< ${sugar5}g/day`;
+      document.getElementById('sugarValue10').textContent = `< ${sugar10}g/day`;
     }
 
     calculate();

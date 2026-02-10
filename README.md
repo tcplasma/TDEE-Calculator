@@ -12,7 +12,10 @@ A professional Total Daily Energy Expenditure (TDEE) calculator with age-specifi
   - Protein: 10-35%
   - Fat: 20-35%
   - Carbs: 45-65%
-- **Micronutrient Goals**: Sodium CDRR (<2,300mg) and Potassium AI recommendations.
+- **Micronutrient Goals**: Sodium CDRR and Potassium AI recommendations.
+- **WHO Guidelines**: 
+  - Sodium: < 2,000 mg/day (WHO 2023)
+  - Free Sugars: < 5% of TDEE (conditional), < 10% of TDEE (strong recommendation)
 - **Interactive Goals**: Dynamic macro distribution adjustment for Weight Loss, Maintenance, and Muscle Gain.
 
 ## Live Demo
@@ -55,8 +58,8 @@ Based on NASEM 2023 Linear Regression Equations.
 ### 3. Macronutrient Distribution (AMDR)
 - **Target Percentages by Goal**:
   - **Maintenance**: Protein 20%, Fat 30%, Carbs 50%
-  - **Weight Loss**: Protein 35%, Fat 25%, Carbs 40%
-  - **Muscle Gain**: Protein 25%, Fat 25%, Carbs 50%
+  - ~~Weight Loss: Protein 35%, Fat 25%, Carbs 40% ~~
+  - ~~Muscle Gain: Protein 25%, Fat 25%, Carbs 50%~~
 
 - **AMDR Gram Range Formulas**:
   The displayed range is based on the NASEM Acceptable Macronutrient Distribution Ranges:
