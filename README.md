@@ -130,16 +130,32 @@ Energy Deposition by pre-pregnancy BMI:
 - **Free Sugars**: < 5% of TDEE (WHO conditional)
 - **Added Sugars**: < 10% of TDEE (WHO strong recommendation)
 
-### 8. SEPV Confidence Interval
+### 8. Weight Management Guidelines (NASEM 2023)
 
-The EER point estimate is accompanied by a **96% prediction interval** based on the Standard Error of Predicted Values (SEPV):
+Targets are calculated using the **Standard Error of Predicted Values (SEPV)** to ensure effectiveness beyond physiological variation.
 
-| Sex | RMSE | 96% CI (±1.96 × RMSE) |
+| Sex | SEPV | 96% CI (±1.96 × SEPV) |
 |-----|------|-----------------------|
-| Male | 339 kcal | ±664 kcal |
-| Female | 246 kcal | ±482 kcal |
+| Male | 342 kcal | ±670 kcal |
+| Female | 241 kcal | ±472 kcal |
 
-Displaying the range (e.g., 1,931–3,259 kcal) reduces anxiety around a single number and reflects metabolic diversity.
+#### Goal Formulas
+
+1. **Maintenance**: `Target = TDEE`
+   - Aim for energy balance.
+
+2. **Weight Loss**: `Target = TDEE - (1.96 × SEPV)`
+   - Creates a deficit exceeding the prediction error to ensure weight loss for the majority.
+   - **Safe Rate**: 0.5 - 1.0 lb/week (0.23 - 0.45 kg/week).
+   - *Benefits*: For obese adults, intentional weight loss is associated with 18% lower all-cause mortality.
+
+3. **Weight Gain**: `Target = TDEE + (1.96 × SEPV)`
+   - Creates a surplus exceeding the prediction error.
+   - **Safe Rate**: ~0.5 lb/week (0.23 kg/week).
+
+4. **Muscle Gain**: `Target = TDEE + 250 to 500 kcal`
+   - Conservative surplus to support hypertrophy while minimizing fat gain.
+   - **Protein Target**: 20% of total calories (within AMDR).
 
 ### 9. Unit Conversions
 - **Weight**: `1 kg = 2.20462 lb`

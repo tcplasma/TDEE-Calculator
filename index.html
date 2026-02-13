@@ -589,7 +589,7 @@
           <div id="tdeeRange"
             style="font-size: 0.75rem; color: #718096; margin-top: 0.5rem; padding: 0.4rem 0.8rem; background: rgba(0,153,255,0.06); border-radius: 8px; text-align: center;">
             96% CI: <span id="tdeeLow">—</span> – <span id="tdeeHigh">—</span> kcal/day</div>
-          <div style="font-size: 0.6rem; color: #a0aec0; margin-top: 0.25rem;">SEPV: Male RMSE 339 · Female RMSE 246
+          <div style="font-size: 0.6rem; color: #a0aec0; margin-top: 0.25rem;">SEPV: Male 342 · Female 241
           </div>
         </div>
 
@@ -619,11 +619,12 @@
             Macronutrient Distribution (AMDR)</h3>
           <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
             <svg viewBox="0 0 220 220" id="pieChartSvg"
-              style="width: 280px; height: 280px; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.08));">
+              style="width: 280px; height: 280px; max-width: 100%; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.08));">
             </svg>
             <div style="font-size: 0.7rem; color: #718096; text-align: center; line-height: 1.5;">
-              <strong style="color: var(--text-main);">Target (Maintenance)</strong><br>
-              Protein 20% · Fat 30% · Carbs 50%
+              <span id="chartLegendTitle"><strong style="color: var(--text-main);">Target
+                  (Maintenance)</strong><br></span>
+              <span id="chartLegendValues">Protein 20% · Fat 30% · Carbs 50%</span>
             </div>
           </div>
         </div>
@@ -841,13 +842,23 @@
       return eer;
     }
 
-    function updatePieChart(tdee) {
+    function updatePieChart(tdee, goal) {
       // Filled SVG Pie Chart with AMDR ranges on slices
       // NASEM AMDR: Protein 10-35%, Fat 20-35%, Carbs 45-65%
-      // Target (Maintenance): P 20%, F 30%, C 50%
+      // Target: P 20%, F 30%, C 50%
       const cx = 110, cy = 110, r = 90;
 
-      // Compute AMDR gram ranges from TDEE
+      // Adjust label based on goal
+      let goalLabel = 'Maintenance';
+      if (goal === 'cut') goalLabel = 'Weight Loss';
+      if (goal === 'bulk') goalLabel = 'Muscle Gain';
+
+      // Compute exact grams for the target TDEE (20% P, 30% F, 50% C)
+      const pGrams = Math.round(tdee * 0.20 / 4);
+      const fGrams = Math.round(tdee * 0.30 / 9);
+      const cGrams = Math.round(tdee * 0.50 / 4);
+
+      // Compute AMDR gram ranges (for slices)
       const pLow = Math.round(tdee * 0.10 / 4), pHigh = Math.round(tdee * 0.35 / 4);
       const fLow = Math.round(tdee * 0.20 / 9), fHigh = Math.round(tdee * 0.35 / 9);
       const cLow = Math.round(tdee * 0.45 / 4), cHigh = Math.round(tdee * 0.65 / 4);
@@ -886,6 +897,13 @@
       });
 
       document.getElementById('pieChartSvg').innerHTML = svg;
+
+      // Update Legend Text
+      document.getElementById('chartLegendTitle').innerHTML = `<strong style="color: var(--text-main);">Target (${goalLabel})</strong><br>`;
+      document.getElementById('chartLegendValues').innerHTML =
+        `Protein 20% (<span style="color:#ff6b6b;font-weight:700">${pGrams}g</span>) · ` +
+        `Fat 30% (<span style="color:#E4C859;font-weight:700">${fGrams}g</span>) · ` +
+        `Carbs 50% (<span style="color:#0099ff;font-weight:700">${cGrams}g</span>)`;
     }
 
 
@@ -914,9 +932,9 @@
 
       const tdee = calculateEER(age, weight, height, state.gender, state.activityLevel, pregnancy, lactation, prePregBMI, gestWeeks);
 
-      // SEPV 96% Confidence Interval (RMSE: Male 339, Female 246)
-      const rmse = (state.gender === 'male') ? 339 : 246;
-      const ci = Math.round(1.96 * rmse);
+      // SEPV 96% Confidence Interval (NASEM 2023: Male 342, Female 241)
+      const sepv = (state.gender === 'male') ? 342 : 241;
+      const ci = Math.round(1.96 * sepv);
       const tdeeLow = Math.max(0, Math.round(tdee) - ci);
       const tdeeHigh = Math.round(tdee) + ci;
 
@@ -938,13 +956,26 @@
       document.getElementById('tdeeHigh').textContent = tdeeHigh.toLocaleString();
       document.getElementById('formulaBadge').textContent = 'Standard: ' + getFormulaName(age);
 
-      // Goals
-      document.getElementById('cutValue').textContent = `${Math.round(tdee - 500).toLocaleString()} - ${Math.round(tdee - 300).toLocaleString()}`;
-      document.getElementById('maintainValue').textContent = Math.round(tdee).toLocaleString();
-      document.getElementById('bulkValue').textContent = `${Math.round(tdee + 250).toLocaleString()} - ${Math.round(tdee + 500).toLocaleString()}`;
+      // Goals (NASEM 2023 Guidelines)
+      // Weight Loss: EER - 1.96 * SEPV (ensures loss for majority)
+      const weightLossTarget = Math.round(tdee - ci);
+      document.getElementById('cutValue').textContent = `< ${weightLossTarget.toLocaleString()}`;
 
-      // Pie chart shows AMDR ranges based on TDEE (Maintenance target: 20% P / 30% F / 50% C)
-      updatePieChart(tdee);
+      // Maintain: TDEE
+      document.getElementById('maintainValue').textContent = Math.round(tdee).toLocaleString();
+
+      // Muscle Gain: TDEE + 250-500 kcal
+      const bulkLow = Math.round(tdee + 250);
+      const bulkHigh = Math.round(tdee + 500);
+      document.getElementById('bulkValue').textContent = `${bulkLow.toLocaleString()} - ${bulkHigh.toLocaleString()}`;
+
+      // Calculate Target TDEE based on current goal
+      let targetTdee = tdee;
+      if (state.goal === 'cut') targetTdee = weightLossTarget;
+      if (state.goal === 'bulk') targetTdee = Math.round((bulkLow + bulkHigh) / 2); // Use midpoint for chart
+
+      // Pie chart shows AMDR ranges based on Target TDEE (Dynamic)
+      updatePieChart(targetTdee, state.goal);
 
       // Micronutrients (NASEM + WHO)
       // Sodium: WHO recommends < 2,000 mg/day (stricter than NASEM 2,300)
