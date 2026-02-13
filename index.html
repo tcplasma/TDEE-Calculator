@@ -444,7 +444,14 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
           <div class="input-group">
             <label for="age">Age (years)</label>
-            <input type="number" id="age" value="25" min="1" max="120" onchange="calculate()">
+            <input type="number" id="age" value="25" min="0" max="120" step="1" onchange="onAgeChange()">
+            <div id="monthsGroup" style="display:none; margin-top: 0.5rem;">
+              <label for="ageMonths" style="font-size: 0.8rem; color: var(--primary); font-weight: 600;">Precise Age in
+                Months (0-35)</label>
+              <input type="number" id="ageMonths" value="12" min="0" max="35" onchange="calculate()">
+              <div style="font-size: 0.6rem; color: #718096; margin-top: 0.25rem;">NASEM 2023 requires month-level
+                precision for infants</div>
+            </div>
           </div>
           <div class="input-group" id="weightGroup">
             <label for="weight" id="weightLabel">Weight (kg)</label>
@@ -487,23 +494,36 @@
               <span class="activity-desc">Heavy physical work or intense training</span>
             </div>
           </div>
+          <div style="font-size: 0.65rem; color: #718096; margin-top: 0.5rem; line-height: 1.4;">PAL thresholds are
+            age-specific (NASEM 2023). Categories for ages &lt;20 use different cut-points than adults. Not applicable
+            for PAL &gt; 2.5.</div>
         </div>
 
         <div id="femaleOnlyFields"
           style="display:none; padding: 1.5rem; background: rgba(0, 153, 255, 0.05); border-radius: 15px; margin-top: 1.5rem;">
           <div class="input-group">
             <label for="pregnancy">Pregnancy Status</label>
-            <select id="pregnancy" onchange="calculate()">
+            <select id="pregnancy" onchange="onPregnancyChange()">
               <option value="none">Not Pregnant</option>
-              <option value="p2">2nd Trimester</option>
-              <option value="p3">3rd Trimester</option>
+              <option value="p2">2nd Trimester (13-27 wk)</option>
+              <option value="p3">3rd Trimester (28-40 wk)</option>
+            </select>
+          </div>
+          <div class="input-group" id="bmiGroup" style="display:none;">
+            <label for="prePregBMI">Pre-Pregnancy Weight Category (WHO)</label>
+            <select id="prePregBMI" onchange="calculate()">
+              <option value="nw">Normal Weight (BMI 18.5-24.9)</option>
+              <option value="uw">Underweight (BMI &lt; 18.5)</option>
+              <option value="ow">Overweight (BMI 25.0-29.9)</option>
+              <option value="ob">Obese (BMI &ge; 30)</option>
             </select>
           </div>
           <div class="input-group" style="margin-bottom: 0;">
             <label for="lactation">Lactation Status</label>
             <select id="lactation" onchange="calculate()">
               <option value="none">Not Lactating</option>
-              <option value="l1">0-6 Months Postpartum</option>
+              <option value="l1">0-6 Months Postpartum (Exclusive)</option>
+              <option value="l2">7-12 Months Postpartum (Partial)</option>
             </select>
           </div>
         </div>
@@ -611,8 +631,9 @@
           <p>Total Daily Energy Expenditure includes BMR plus calories from daily activities and exercise.</p>
         </div>
         <div class="info-card">
-          <h4>📊 Age-Specific Formulas</h4>
-          <p>We use Schofield for ages 3-17, Mifflin-St Jeor for 18-59, and elderly formulas for 60+.</p>
+          <h4>📊 NASEM 2023 Standard</h4>
+          <p>Uses age-specific TEE prediction equations developed from the global Doubly Labeled Water (DLW) database,
+            covering the general population including overweight/obese individuals.</p>
         </div>
         <div class="info-card">
           <h4>🎯 Safe Weight Goals</h4>
@@ -620,8 +641,15 @@
         </div>
       </div>
       <div class="disclaimer">
-        <strong>📌 Disclaimer:</strong> This calculator provides estimates. Individual metabolism varies. Consult a
-        healthcare professional for personalized advice.
+        <strong>📌 Important:</strong> This EER is a <strong>predicted starting point</strong>, not a definitive
+        prescription. Self-reported dietary records typically underreport by 8–30%.
+        <strong>Long-term body weight monitoring is the ultimate biological indicator of energy adequacy.</strong>
+        If your weight changes unexpectedly while following this intake, adjust based on actual weight trends.
+      </div>
+      <div class="disclaimer"
+        style="margin-top: 0.75rem; background: rgba(255, 107, 107, 0.08); border-left-color: var(--accent-red);">
+        <strong>⚠️ Exclusion:</strong> These equations are not applicable to individuals with PAL > 2.5 (e.g., elite
+        athletes, extreme manual labor) or those with specific metabolic conditions affecting energy expenditure.
       </div>
     </section>
   </div>
@@ -686,52 +714,77 @@
       calculate();
     }
 
+    function onAgeChange() {
+      const age = parseInt(document.getElementById('age').value) || 0;
+      document.getElementById('monthsGroup').style.display = age < 3 ? 'block' : 'none';
+      if (age >= 3) calculate();
+    }
+
+    function onPregnancyChange() {
+      const preg = document.getElementById('pregnancy').value;
+      document.getElementById('bmiGroup').style.display = preg !== 'none' ? 'block' : 'none';
+      calculate();
+    }
+
     function getFormulaName(age) {
       if (age < 3) return 'NASEM 2023 (Infant)';
       if (age < 19) return 'NASEM 2023 (Child/Teen)';
       return 'NASEM 2023 (Adult)';
     }
 
-    function calculateEER(age, weight, height, gender, activity, pregnancy, lactation) {
-      // NASEM 2023 Equations
-      const W = weight;
-      const A = age;
+    function calculateEER(age, weight, height, gender, activity, pregnancy, lactation, prePregBMI) {
+      // NASEM 2023 DRI Equations (Full Implementation)
+      const W = weight; // kg
+      const A = age;    // years (fractional for infants)
       const H = height; // cm
-
       let tee = 0;
+      let G = 0; // Growth increment
+
       if (age < 3) {
-        // NASEM 2023 (0-3y)
+        // ── Infant TEE (0-2.99y) ──
         if (gender === 'male') {
           tee = -716.45 - (1.00 * A) + (17.82 * H) + (15.06 * W);
         } else {
           tee = -69.15 + (80.0 * A) + (2.65 * H) + (54.15 * W);
         }
-      } else if (age < 19) {
-        // NASEM 2023 (3-18.99y)
-        let activeFactor = 1.0;
-        if (gender === 'male') {
-          const inactive = -447.51 + (3.68 * A) + (13.01 * H) + (13.15 * W);
-          if (activity === 'inactive') tee = inactive;
-          else if (activity === 'low') tee = inactive + 200;
-          else if (activity === 'active') tee = inactive + 400;
-          else tee = inactive + 600;
+        // Infant Growth Increment (age in months = A * 12)
+        const ageMonths = A * 12;
+        if (ageMonths < 3) {
+          G = (gender === 'male') ? 200 : 180;
+        } else if (ageMonths < 6) {
+          G = (gender === 'male') ? 50 : 60;
         } else {
-          const active = -388.19 + (3.68 * A) + (12.66 * H) + (20.46 * W);
-          if (activity === 'inactive') tee = active - 400;
-          else if (activity === 'low') tee = active - 200;
-          else if (activity === 'active') tee = active;
-          else tee = active + 200;
+          // 6-35.99 months: Male +20, Female 12-35.99mo +15, Female 6-11.99mo +20
+          G = (gender === 'female' && ageMonths >= 12) ? 15 : 20;
         }
 
-        // Add Growth Cost (3-18y)
-        if (age >= 3 && age <= 18) {
-          if (age === 3) tee += (gender === 'male' ? 20 : 15);
-          else if (age <= 8) tee += 15;
-          else if (age >= 14) tee += 20;
-          else tee += 10;
+      } else if (age < 19) {
+        // ── Pediatric TEE (3-18.99y) ── per-PAL coefficients
+        if (gender === 'male') {
+          // Boys: Age coefficient A = 3.68
+          switch (activity) {
+            case 'inactive': tee = -447.51 + (3.68 * A) + (13.01 * H) + (13.15 * W); break;
+            case 'low': tee = 19.12 + (3.68 * A) + (8.62 * H) + (20.28 * W); break;
+            case 'active': tee = -388.19 + (3.68 * A) + (12.66 * H) + (20.46 * W); break;
+            case 'very': tee = -671.75 + (3.68 * A) + (15.38 * H) + (23.25 * W); break;
+          }
+        } else {
+          // Girls: Age coefficient A = -22.25
+          switch (activity) {
+            case 'inactive': tee = 55.59 + (-22.25 * A) + (8.43 * H) + (17.07 * W); break;
+            case 'low': tee = -297.54 + (-22.25 * A) + (12.77 * H) + (14.73 * W); break;
+            case 'active': tee = -189.55 + (-22.25 * A) + (11.74 * H) + (18.34 * W); break;
+            case 'very': tee = -709.59 + (-22.25 * A) + (18.22 * H) + (14.25 * W); break;
+          }
         }
+        // Pediatric Growth Increment G (3-18y)
+        if (age <= 3) G = (gender === 'male') ? 20 : 15;
+        else if (age <= 8) G = 15;
+        else if (age <= 13) G = (gender === 'male') ? 25 : 30;
+        else G = 20; // 14-18y
+
       } else {
-        // Adult (19+)
+        // ── Adult TEE (19+) ──
         if (gender === 'male') {
           switch (activity) {
             case 'inactive': tee = 753.07 - (10.83 * A) + (6.50 * H) + (14.10 * W); break;
@@ -749,14 +802,26 @@
         }
       }
 
-      // Pregnancy / Lactation (Female Adults)
-      if (gender === 'female' && age >= 19) {
-        if (pregnancy === 'p2') tee += 340;
-        if (pregnancy === 'p3') tee += 450;
-        if (lactation === 'l1') tee += (540 - 140);
+      // EER = TEE + G (for age < 19)
+      let eer = tee + G;
+
+      // ── Pregnancy Adjustment (Female, Gestation >= 13 wk) ──
+      if (gender === 'female' && pregnancy !== 'none') {
+        // Midpoint gestation weeks: 2nd tri ~20wk, 3rd tri ~34wk
+        const gestWeeks = (pregnancy === 'p2') ? 20 : 34;
+        // Energy Deposition by pre-pregnancy BMI category
+        const edMap = { uw: 300, nw: 200, ow: 150, ob: -50 };
+        const ed = edMap[prePregBMI] || 200;
+        eer += (9.16 * gestWeeks) + ed;
       }
 
-      return tee;
+      // ── Lactation Adjustment ──
+      if (gender === 'female' && lactation !== 'none') {
+        if (lactation === 'l1') eer += (540 - 140); // 0-6mo exclusive
+        if (lactation === 'l2') eer += 380;          // 7-12mo partial
+      }
+
+      return eer;
     }
 
     function updatePieChart(tdee) {
@@ -808,9 +873,15 @@
 
 
     function calculate() {
-      const age = parseInt(document.getElementById('age').value) || 25;
+      let age = parseInt(document.getElementById('age').value) || 25;
+      // For infants (age < 3), use months input for fractional year precision
+      if (age < 3) {
+        const months = parseInt(document.getElementById('ageMonths').value) || 0;
+        age = months / 12; // Convert to fractional years for formula
+      }
       const pregnancy = document.getElementById('pregnancy').value;
       const lactation = document.getElementById('lactation').value;
+      const prePregBMI = document.getElementById('prePregBMI').value;
       let weight, height;
 
       if (state.unit === 'metric') {
@@ -823,7 +894,7 @@
         weight = (parseFloat(document.getElementById('weight').value) || 154) / 2.20462;
       }
 
-      const tdee = calculateEER(age, weight, height, state.gender, state.activityLevel, pregnancy, lactation);
+      const tdee = calculateEER(age, weight, height, state.gender, state.activityLevel, pregnancy, lactation, prePregBMI);
 
       let bmrDisplay;
       if (age >= 19) {

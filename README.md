@@ -1,22 +1,19 @@
 # TDEE Calculator
 
-A professional Total Daily Energy Expenditure (TDEE) calculator with age-specific BMR formulas.
+A professional Total Daily Energy Expenditure (TDEE) calculator implementing the **NASEM 2023** *Dietary Reference Intakes for Energy* standard with full-spectrum age coverage.
 
 ## Features
 
-- **NASEM 2023 Standard**: Implements latest Estimated Energy Requirement (EER) equations from the National Academies' *Dietary Reference Intakes for Energy* (2023).
-- **Scientific Formulas**: 
-  - **Adults**: Uses direct linear regression equations (Doubly Labeled Water database) for 4 PAL categories.
-  - **Pediatric**: Schofield and NASEM-specific growth cost refinements.
-- **AMDR Implementation**: Macronutrient ranges based on *Acceptable Macronutrient Distribution Ranges*:
-  - Protein: 10-35%
-  - Fat: 20-35%
-  - Carbs: 45-65%
-- **Micronutrient Goals**: Sodium CDRR and Potassium AI recommendations.
-- **WHO Guidelines**: 
-  - Sodium: < 2,000 mg/day (WHO 2023)
-  - Free Sugars: < 5% of TDEE (conditional), < 10% of TDEE (strong recommendation)
-- **Interactive Goals**: Dynamic macro distribution adjustment for Weight Loss, Maintenance, and Muscle Gain.
+- **NASEM 2023 Standard**: Full implementation of EER equations from the National Academies (2023), based on the global Doubly Labeled Water (DLW) database covering the **general population** (including overweight/obese individuals).
+- **Three-Tier Age Engine**: Infant (0-2.99y), Pediatric (3-18.99y), Adult (19+) — each with dedicated TEE equations.
+- **Per-PAL Coefficients**: Unique regression coefficients for each of the 4 Physical Activity Levels (Inactive, Low Active, Active, Very Active) per sex and age group.
+- **Growth Increment (G)**: Age- and sex-specific energy cost of growth for all individuals under 19.
+- **Infant Precision**: Month-level age input for infants (0-35 months) as required by NASEM 2023 specification.
+- **Pregnancy Formula (2023)**: `EER = TEE + 9.16 × Gestation(wk) + Energy Deposition(BMI)` with pre-pregnancy BMI category selection (UW/NW/OW/OB).
+- **Lactation**: 0-6 months exclusive (+400 kcal/d) and 7-12 months partial (+380 kcal/d).
+- **AMDR Pie Chart**: Filled SVG pie chart showing Macronutrient Distribution with NASEM AMDR gram ranges.
+- **WHO Guidelines**: Sodium (< 2,000 mg/day), Free Sugars (< 5% TDEE), Added Sugars (< 10% TDEE).
+- **Micronutrient Goals**: Potassium AI (NASEM), age- and sex-adjusted.
 
 ## Live Demo
 
@@ -24,7 +21,9 @@ Visit: [https://tcplasma.github.io/TDEE-Calculator/](https://tcplasma.github.io/
 
 ## Calculation Formulas
 
-### 1. Basal Metabolic Rate (BMR)
+> Variables: **A** = Age (years), **H** = Height (cm), **W** = Weight (kg)
+
+### 1. Basal Metabolic Rate (BMR) — Display Only
 - **Adults (19+)**: Mifflin-St Jeor Equation
   - Male: `10W + 6.25H - 5A + 5`
   - Female: `10W + 6.25H - 5A - 161`
@@ -36,42 +35,106 @@ Visit: [https://tcplasma.github.io/TDEE-Calculator/](https://tcplasma.github.io/
   - Male: `17.686W + 658.2H(m) - 618.6`
   - Female: `13.384W + 692.6H(m) - 360.2`
 
-### 2. Total Daily Energy Expenditure (TDEE / EER)
-Based on NASEM 2023 Linear Regression Equations.
+### 2. Total Energy Expenditure — TEE (NASEM 2023)
 
-#### Adults (19+)
-- **Men**:
-  - Inactive: `753.07 - 10.83A + 6.50H + 14.10W`
-  - Low Active: `581.47 - 10.83A + 8.30H + 14.94W`
-  - Active: `1004.82 - 10.83A + 6.52H + 15.91W`
-  - Very Active: `-517.88 - 10.83A + 15.61H + 19.11W`
-- **Women**:
-  - Inactive: `584.90 - 7.01A + 5.72H + 11.71W`
-  - Low Active: `575.77 - 7.01A + 6.60H + 12.14W`
-  - Active: `710.25 - 7.01A + 6.54H + 12.34W`
-  - Very Active: `511.83 - 7.01A + 9.07H + 12.56W`
+Formula structure: `TEE = C + (A_coeff × Age) + (H_coeff × Height) + (W_coeff × Weight)`
 
-#### Physiological Adjustments
-- ~~Pregnancy**: +340 kcal (T2), +450 kcal (T3)~~
-- ~~Lactation (0-6m)**: +400 kcal~~
+#### Infants (0-2.99y)
+- Male: `-716.45 - 1.00A + 17.82H + 15.06W`
+- Female: `-69.15 + 80.0A + 2.65H + 54.15W`
 
-### 3. Macronutrient Distribution (AMDR)
-- **Target Percentages by Goal**:
-  - **Maintenance**: Protein 20%, Fat 30%, Carbs 50%
-  - ~~Weight Loss: Protein 35%, Fat 25%, Carbs 40% ~~
-  - ~~Muscle Gain: Protein 25%, Fat 25%, Carbs 50%~~
+#### Boys (3-18.99y) — Age coefficient: **3.68**
+| PAL | C | H | W |
+|-----|------|-------|-------|
+| Inactive | -447.51 | 13.01 | 13.15 |
+| Low Active | 19.12 | 8.62 | 20.28 |
+| Active | -388.19 | 12.66 | 20.46 |
+| Very Active | -671.75 | 15.38 | 23.25 |
 
-- **AMDR Gram Range Formulas**:
-  The displayed range is based on the NASEM Acceptable Macronutrient Distribution Ranges:
-  - **Protein Range (g)**: `(Target TDEE × 0.10) / 4` to `(Target TDEE × 0.35) / 4`
-  - **Fat Range (g)**: `(Target TDEE × 0.20) / 9` to `(Target TDEE × 0.35) / 9`
-  - **Carbs Range (g)**: `(Target TDEE × 0.45) / 4` to `(Target TDEE × 0.65) / 4`
+#### Girls (3-18.99y) — Age coefficient: **-22.25**
+| PAL | C | H | W |
+|-----|------|-------|-------|
+| Inactive | 55.59 | 8.43 | 17.07 |
+| Low Active | -297.54 | 12.77 | 14.73 |
+| Active | -189.55 | 11.74 | 18.34 |
+| Very Active | -709.59 | 18.22 | 14.25 |
 
-*(Note: Target TDEE is adjusted based on goal: Loss = TDEE-500, Gain = TDEE+300, Maintain = TDEE)*
+#### Adult Men (19+) — Age coefficient: **-10.83**
+| PAL | C | H | W |
+|-----|------|------|-------|
+| Inactive | 753.07 | 6.50 | 14.10 |
+| Low Active | 581.47 | 8.30 | 14.94 |
+| Active | 1004.82 | 6.52 | 15.91 |
+| Very Active | -517.88 | 15.61 | 19.11 |
 
-### 4. Unit Conversions
+#### Adult Women (19+) — Age coefficient: **-7.01**
+| PAL | C | H | W |
+|-----|------|------|-------|
+| Inactive | 584.90 | 5.72 | 11.71 |
+| Low Active | 575.77 | 6.60 | 12.14 |
+| Active | 710.25 | 6.54 | 12.34 |
+| Very Active | 511.83 | 9.07 | 12.56 |
+
+### 3. Growth Increment — G (kcal/d)
+
+`EER = TEE + G` for all individuals under 19.
+
+| Age Range | Male | Female |
+|-----------|------|--------|
+| 0-2.99 months | +200 | +180 |
+| 3-5.99 months | +50 | +60 |
+| 6-11.99 months | +20 | +20 |
+| 12-35.99 months | +20 | +15 |
+| 3 years | +20 | +15 |
+| 4-8 years | +15 | +15 |
+| 9-13 years | +25 | +30 |
+| 14-18 years | +20 | +20 |
+
+### 4. Pregnancy (NASEM 2023)
+
+`EER = TEE + (9.16 × Gestation_weeks) + Energy_Deposition`
+
+Activated for gestation ≥ 13 weeks. Energy Deposition by pre-pregnancy BMI:
+
+| BMI Category | Energy Deposition |
+|--------------|-------------------|
+| Underweight (< 18.5) | +300 kcal/d |
+| Normal Weight (18.5-24.9) | +200 kcal/d |
+| Overweight (25.0-29.9) | +150 kcal/d |
+| Obese (≥ 30) | -50 kcal/d |
+
+### 5. Lactation
+
+| Period | Formula |
+|--------|---------|
+| 0-6 months (exclusive) | TEE + 540 - 140 = TEE + 400 |
+| 7-12 months (partial) | TEE + 380 |
+
+### 6. Macronutrient Distribution (AMDR)
+
+- **Target Percentages (Maintenance)**: Protein 20%, Fat 30%, Carbs 50%
+- **AMDR Gram Ranges** (displayed on pie chart):
+  - Protein: `(TDEE × 0.10) / 4` to `(TDEE × 0.35) / 4`
+  - Fat: `(TDEE × 0.20) / 9` to `(TDEE × 0.35) / 9`
+  - Carbs: `(TDEE × 0.45) / 4` to `(TDEE × 0.65) / 4`
+
+### 7. Nutritional Guidelines
+
+- **Sodium**: < 2,000 mg/day (WHO 2023, stricter than NASEM CDRR 2,300 mg)
+- **Potassium**: NASEM AI — Male 19+ 3,400 mg, Female 19+ 2,600 mg, <19 2,300 mg
+- **Free Sugars**: < 5% of TDEE (WHO conditional)
+- **Added Sugars**: < 10% of TDEE (WHO strong recommendation)
+
+### 8. Unit Conversions
 - **Weight**: `1 kg = 2.20462 lb`
 - **Height**: `1 inch = 2.54 cm`
+
+## Limitations & Exclusions
+
+- Not applicable to individuals with **PAL > 2.5** (elite athletes, extreme manual labor).
+- Not applicable to individuals with specific metabolic conditions affecting energy expenditure.
+- EER is a **predicted starting point**. Long-term body weight monitoring is the ultimate biological indicator of energy adequacy.
+- Self-reported dietary records typically underreport intake by 8–30%.
 
 ## Technology Stack
 
