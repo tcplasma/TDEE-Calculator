@@ -959,7 +959,7 @@
       // Goals (NASEM 2023 Guidelines)
       // Weight Loss: EER - 1.96 * SEPV (ensures loss for majority)
       const weightLossTarget = Math.round(tdee - ci);
-      document.getElementById('cutValue').textContent = `< ${weightLossTarget.toLocaleString()}`;
+      document.getElementById('cutValue').textContent = weightLossTarget.toLocaleString();
 
       // Maintain: TDEE
       document.getElementById('maintainValue').textContent = Math.round(tdee).toLocaleString();
