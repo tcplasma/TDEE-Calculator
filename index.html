@@ -479,19 +479,19 @@
           <div class="activity-options">
             <div class="activity-option" onclick="setActivity('inactive')">
               <span class="activity-label">Inactive</span>
-              <span class="activity-desc">Basic living activities only</span>
+              <span class="activity-desc">Office/desk work, &lt;5,000 steps/day</span>
             </div>
             <div class="activity-option active" onclick="setActivity('low')">
               <span class="activity-label">Low Active</span>
-              <span class="activity-desc">Daily living + 30-60 min moderate activity</span>
+              <span class="activity-desc">Light commuting, 5,000-7,500 steps/day</span>
             </div>
             <div class="activity-option" onclick="setActivity('active')">
               <span class="activity-label">Active</span>
-              <span class="activity-desc">Daily living + >60 min moderate activity</span>
+              <span class="activity-desc">Regular exercise, 7,500-10,000 steps/day</span>
             </div>
             <div class="activity-option" onclick="setActivity('very')">
               <span class="activity-label">Very Active</span>
-              <span class="activity-desc">Heavy physical work or intense training</span>
+              <span class="activity-desc">Manual labor or intense training, &gt;10,000 steps/day</span>
             </div>
           </div>
           <div style="font-size: 0.65rem; color: #718096; margin-top: 0.5rem; line-height: 1.4;">PAL thresholds are
@@ -505,9 +505,16 @@
             <label for="pregnancy">Pregnancy Status</label>
             <select id="pregnancy" onchange="onPregnancyChange()">
               <option value="none">Not Pregnant</option>
+              <option value="p1">1st Trimester (0-12 wk) — No change</option>
               <option value="p2">2nd Trimester (13-27 wk)</option>
               <option value="p3">3rd Trimester (28-40 wk)</option>
             </select>
+          </div>
+          <div class="input-group" id="gestWeeksGroup" style="display:none;">
+            <label for="gestWeeks">Gestation Weeks</label>
+            <input type="number" id="gestWeeks" value="20" min="13" max="40" onchange="calculate()">
+            <div style="font-size: 0.6rem; color: #718096; margin-top: 0.25rem;">Precise gestation weeks for EER = TEE +
+              9.16×Weeks + Energy Deposition</div>
           </div>
           <div class="input-group" id="bmiGroup" style="display:none;">
             <label for="prePregBMI">Pre-Pregnancy Weight Category (WHO)</label>
@@ -579,6 +586,11 @@
             (TDEE)</div>
           <div class="result-value" id="tdeeValue">2,595</div>
           <div class="result-unit">kcal/day</div>
+          <div id="tdeeRange"
+            style="font-size: 0.75rem; color: #718096; margin-top: 0.5rem; padding: 0.4rem 0.8rem; background: rgba(0,153,255,0.06); border-radius: 8px; text-align: center;">
+            96% CI: <span id="tdeeLow">—</span> – <span id="tdeeHigh">—</span> kcal/day</div>
+          <div style="font-size: 0.6rem; color: #a0aec0; margin-top: 0.25rem;">SEPV: Male RMSE 339 · Female RMSE 246
+          </div>
         </div>
 
         <div class="goals">
@@ -722,7 +734,12 @@
 
     function onPregnancyChange() {
       const preg = document.getElementById('pregnancy').value;
-      document.getElementById('bmiGroup').style.display = preg !== 'none' ? 'block' : 'none';
+      const isPregnant = (preg === 'p2' || preg === 'p3');
+      document.getElementById('bmiGroup').style.display = isPregnant ? 'block' : 'none';
+      document.getElementById('gestWeeksGroup').style.display = isPregnant ? 'block' : 'none';
+      // Set default gestation weeks for selected trimester
+      if (preg === 'p2') document.getElementById('gestWeeks').value = 20;
+      if (preg === 'p3') document.getElementById('gestWeeks').value = 34;
       calculate();
     }
 
@@ -732,7 +749,7 @@
       return 'NASEM 2023 (Adult)';
     }
 
-    function calculateEER(age, weight, height, gender, activity, pregnancy, lactation, prePregBMI) {
+    function calculateEER(age, weight, height, gender, activity, pregnancy, lactation, prePregBMI, gestationWeeks) {
       // NASEM 2023 DRI Equations (Full Implementation)
       const W = weight; // kg
       const A = age;    // years (fractional for infants)
@@ -806,9 +823,9 @@
       let eer = tee + G;
 
       // ── Pregnancy Adjustment (Female, Gestation >= 13 wk) ──
-      if (gender === 'female' && pregnancy !== 'none') {
-        // Midpoint gestation weeks: 2nd tri ~20wk, 3rd tri ~34wk
-        const gestWeeks = (pregnancy === 'p2') ? 20 : 34;
+      if (gender === 'female' && (pregnancy === 'p2' || pregnancy === 'p3')) {
+        // Use actual gestation weeks from input
+        const gestWeeks = gestationWeeks || ((pregnancy === 'p2') ? 20 : 34);
         // Energy Deposition by pre-pregnancy BMI category
         const edMap = { uw: 300, nw: 200, ow: 150, ob: -50 };
         const ed = edMap[prePregBMI] || 200;
@@ -882,6 +899,7 @@
       const pregnancy = document.getElementById('pregnancy').value;
       const lactation = document.getElementById('lactation').value;
       const prePregBMI = document.getElementById('prePregBMI').value;
+      const gestWeeks = parseInt(document.getElementById('gestWeeks').value) || 20;
       let weight, height;
 
       if (state.unit === 'metric') {
@@ -894,7 +912,13 @@
         weight = (parseFloat(document.getElementById('weight').value) || 154) / 2.20462;
       }
 
-      const tdee = calculateEER(age, weight, height, state.gender, state.activityLevel, pregnancy, lactation, prePregBMI);
+      const tdee = calculateEER(age, weight, height, state.gender, state.activityLevel, pregnancy, lactation, prePregBMI, gestWeeks);
+
+      // SEPV 96% Confidence Interval (RMSE: Male 339, Female 246)
+      const rmse = (state.gender === 'male') ? 339 : 246;
+      const ci = Math.round(1.96 * rmse);
+      const tdeeLow = Math.max(0, Math.round(tdee) - ci);
+      const tdeeHigh = Math.round(tdee) + ci;
 
       let bmrDisplay;
       if (age >= 19) {
@@ -910,6 +934,8 @@
 
       document.getElementById('bmrValue').textContent = Math.round(bmrDisplay).toLocaleString();
       document.getElementById('tdeeValue').textContent = Math.round(tdee).toLocaleString();
+      document.getElementById('tdeeLow').textContent = tdeeLow.toLocaleString();
+      document.getElementById('tdeeHigh').textContent = tdeeHigh.toLocaleString();
       document.getElementById('formulaBadge').textContent = 'Standard: ' + getFormulaName(age);
 
       // Goals

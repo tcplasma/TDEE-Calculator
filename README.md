@@ -7,9 +7,11 @@ A professional Total Daily Energy Expenditure (TDEE) calculator implementing the
 - **NASEM 2023 Standard**: Full implementation of EER equations from the National Academies (2023), based on the global Doubly Labeled Water (DLW) database covering the **general population** (including overweight/obese individuals).
 - **Three-Tier Age Engine**: Infant (0-2.99y), Pediatric (3-18.99y), Adult (19+) — each with dedicated TEE equations.
 - **Per-PAL Coefficients**: Unique regression coefficients for each of the 4 Physical Activity Levels (Inactive, Low Active, Active, Very Active) per sex and age group.
+- **Step-Count PAL Guidance**: Activity levels include step-count ranges and lifestyle descriptions for accurate self-assessment.
 - **Growth Increment (G)**: Age- and sex-specific energy cost of growth for all individuals under 19.
 - **Infant Precision**: Month-level age input for infants (0-35 months) as required by NASEM 2023 specification.
-- **Pregnancy Formula (2023)**: `EER = TEE + 9.16 × Gestation(wk) + Energy Deposition(BMI)` with pre-pregnancy BMI category selection (UW/NW/OW/OB).
+- **SEPV Confidence Interval**: Displays 96% CI around the EER point estimate (Male RMSE 339 ±664 kcal, Female RMSE 246 ±482 kcal).
+- **Pregnancy Formula (2023)**: `EER = TEE + 9.16 × Gestation(wk) + Energy Deposition(BMI)` with precise gestation weeks input and pre-pregnancy BMI category selection (UW/NW/OW/OB). 1st trimester explicitly handled as no change.
 - **Lactation**: 0-6 months exclusive (+400 kcal/d) and 7-12 months partial (+380 kcal/d).
 - **AMDR Pie Chart**: Filled SVG pie chart showing Macronutrient Distribution with NASEM AMDR gram ranges.
 - **WHO Guidelines**: Sodium (< 2,000 mg/day), Free Sugars (< 5% TDEE), Added Sugars (< 10% TDEE).
@@ -94,7 +96,10 @@ Formula structure: `TEE = C + (A_coeff × Age) + (H_coeff × Height) + (W_coeff 
 
 `EER = TEE + (9.16 × Gestation_weeks) + Energy_Deposition`
 
-Activated for gestation ≥ 13 weeks. Energy Deposition by pre-pregnancy BMI:
+- **1st Trimester (0-12 wk)**: No energy adjustment; uses standard non-pregnant EER.
+- **2nd/3rd Trimester**: Activated for gestation ≥ 13 weeks. User inputs precise gestation weeks.
+
+Energy Deposition by pre-pregnancy BMI:
 
 | BMI Category | Energy Deposition |
 |--------------|-------------------|
@@ -125,9 +130,21 @@ Activated for gestation ≥ 13 weeks. Energy Deposition by pre-pregnancy BMI:
 - **Free Sugars**: < 5% of TDEE (WHO conditional)
 - **Added Sugars**: < 10% of TDEE (WHO strong recommendation)
 
-### 8. Unit Conversions
+### 8. SEPV Confidence Interval
+
+The EER point estimate is accompanied by a **96% prediction interval** based on the Standard Error of Predicted Values (SEPV):
+
+| Sex | RMSE | 96% CI (±1.96 × RMSE) |
+|-----|------|-----------------------|
+| Male | 339 kcal | ±664 kcal |
+| Female | 246 kcal | ±482 kcal |
+
+Displaying the range (e.g., 1,931–3,259 kcal) reduces anxiety around a single number and reflects metabolic diversity.
+
+### 9. Unit Conversions
 - **Weight**: `1 kg = 2.20462 lb`
 - **Height**: `1 inch = 2.54 cm`
+- **Backend**: All calculations enforced in cm/kg; frontend converts for display only.
 
 ## Limitations & Exclusions
 
