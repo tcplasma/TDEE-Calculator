@@ -957,9 +957,10 @@
       document.getElementById('formulaBadge').textContent = 'Standard: ' + getFormulaName(age);
 
       // Goals (NASEM 2023 Guidelines)
-      // Weight Loss: EER - 1.96 * SEPV (ensures loss for majority)
-      const weightLossTarget = Math.round(tdee - ci);
-      document.getElementById('cutValue').textContent = weightLossTarget.toLocaleString();
+      // Weight Loss: Safe Rate 0.5 - 1.0 lb/week (250 - 500 kcal/day deficit) based on README
+      const cutMin = Math.round(tdee - 500);
+      const cutMax = Math.round(tdee - 250);
+      document.getElementById('cutValue').textContent = `${cutMin.toLocaleString()} - ${cutMax.toLocaleString()}`;
 
       // Maintain: TDEE
       document.getElementById('maintainValue').textContent = Math.round(tdee).toLocaleString();
@@ -971,7 +972,7 @@
 
       // Calculate Target TDEE based on current goal
       let targetTdee = tdee;
-      if (state.goal === 'cut') targetTdee = weightLossTarget;
+      if (state.goal === 'cut') targetTdee = cutMin; // Default to -500 deficit for chart
       if (state.goal === 'bulk') targetTdee = Math.round((bulkLow + bulkHigh) / 2); // Use midpoint for chart
 
       // Pie chart shows AMDR ranges based on Target TDEE (Dynamic)
