@@ -28,11 +28,11 @@ node_modules/
 dist/
 build/
 
-# Environment files
-.env
-.env.local
-.env.*.local
+# Agent Skills & Dev Content
+.agent/
+.agent/skills/
+*.log
 
-# Temporary files
-*.tmp
-*.temp
+# OS Generated
+.DS_Store
+Thumbs.db
