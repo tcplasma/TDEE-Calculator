@@ -149,47 +149,229 @@ fetch('https://api.example.com/users');
 
 ---
 
-## Modern Web Design Principles
+## Modern Web Design Principles (2025-2026)
 
-To ensure your web applications are not just functional but also **beautiful and state-of-the-art**, adhere to these design standards:
+To ensure your web applications look **premium, state-of-the-art, and agency-quality**, follow these standards rigorously.
 
-### 1. Rich Aesthetics
-- **Vibrant Color Palettes**: Avoid flat, generic colors. Use curated gradients (e.g., `linear-gradient(135deg, #0099ff 0%, #0c98fc 100%)`).
-- **Glassmorphism**: Use translucent backgrounds with blur effects for a premium feel.
-  ```css
-  .modern-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  }
-  ```
-- **Depth & Dimension**: Use subtle shadows and layered elements to create a sense of space.
+### 1. Design Token Architecture
 
-### 2. Premium Typography
-- **Google Fonts**: Always import and use modern typography. 
-  - *Serif*: Playfair Display, Lora.
-  - *Sans-Serif*: Outfit, Inter, Montserrat, Roboto.
-- **Dynamic Sizing**: Use `rem` or `vw` for scalable typography.
+Use a **layered CSS variable system** — raw values → semantic tokens → component tokens. Define everything at `:root` and override in components or media queries.
 
-### 3. Dynamic Design & Micro-animations
-- **Interactive States**: Every button or clickable element should have a smooth hover or active transition.
-  ```css
-  .btn {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  ```
-- **Lively Interfaces**: Use micro-animations to reward user interaction (e.g., subtle scaling on input focus).
+```css
+:root {
+  /* ── Raw Palette (OKLCH for perceptual uniformity) ── */
+  --raw-blue-50:  oklch(0.97 0.01 250);
+  --raw-blue-500: oklch(0.60 0.18 250);
+  --raw-blue-700: oklch(0.45 0.18 250);
+  --raw-gold-400: oklch(0.82 0.14  85);
+  --raw-gray-50:  oklch(0.98 0.00   0);
+  --raw-gray-100: oklch(0.94 0.00   0);
+  --raw-gray-600: oklch(0.55 0.00   0);
+  --raw-gray-900: oklch(0.20 0.00   0);
+  --raw-white:    #ffffff;
+  --raw-black:    #000000;
 
-### 4. Responsive & Accessible
-- **Mobile First**: Design for small screens first, then scale up.
-- **Semantic HTML**: Use structures that are meaningful for both users and search engines.
+  /* ── Semantic Tokens ── */
+  --color-bg-page:      var(--raw-gray-50);
+  --color-bg-surface:   var(--raw-white);
+  --color-bg-elevated:  rgba(255,255,255,0.8);
+  --color-text-primary: var(--raw-gray-900);
+  --color-text-muted:   var(--raw-gray-600);
+  --color-brand:        var(--raw-blue-500);
+  --color-brand-dark:   var(--raw-blue-700);
+  --color-accent:       var(--raw-gold-400);
 
----
+  /* ── Spacing Scale (8px grid) ── */
+  --space-xs:  0.25rem;  /*  4px */
+  --space-sm:  0.5rem;   /*  8px */
+  --space-md:  1rem;     /* 16px */
+  --space-lg:  1.5rem;   /* 24px */
+  --space-xl:  2rem;     /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+
+  /* ── Radius Scale ── */
+  --radius-sm:   8px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+  --radius-full: 9999px;
+
+  /* ── Typography Scale (fluid with clamp) ── */
+  --text-xs:   clamp(0.65rem, 0.6rem + 0.2vw, 0.75rem);
+  --text-sm:   clamp(0.8rem,  0.75rem + 0.2vw, 0.9rem);
+  --text-base: clamp(0.95rem, 0.9rem + 0.2vw, 1.05rem);
+  --text-lg:   clamp(1.1rem,  1rem + 0.4vw, 1.3rem);
+  --text-xl:   clamp(1.4rem,  1.2rem + 0.6vw, 1.7rem);
+  --text-2xl:  clamp(1.8rem,  1.5rem + 1vw,  2.5rem);
+  --text-3xl:  clamp(2.2rem,  1.8rem + 1.2vw, 3rem);
+
+  /* ── Shadow System ── */
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:   0 12px 32px rgba(0,0,0,0.12);
+  --shadow-xl:   0 20px 48px rgba(0,0,0,0.16);
+  --shadow-glow: 0 0 24px rgba(0,100,255,0.15);
+
+  /* ── Glassmorphism ── */
+  --glass-bg:     rgba(255,255,255,0.55);
+  --glass-border: rgba(255,255,255,0.25);
+  --glass-blur:   blur(20px);
+}
+```
+
+### 2. Rich Aesthetics & Glassmorphism
+
+Create **depth and atmosphere** with layered translucent surfaces:
+
+```css
+/* Modern glassmorphism card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Dark glassmorphism variant (for dark headers/sections) */
+.glass-dark {
+  background: rgba(10, 20, 40, 0.7);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: white;
+}
+
+/* Gradient backgrounds — use subtle, layered gradients, never flat colors */
+.premium-bg {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(0,120,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(228,200,89,0.06) 0%, transparent 50%),
+    linear-gradient(160deg, #f8fafc 0%, #eef2f7 100%);
+}
+```
+
+**Rules:**
+- ❌ Never use flat solid backgrounds (e.g., `background: #0099ff`)
+- ✅ Always layer gradients, radials, or glass effects
+- ✅ Use `box-shadow` for depth — every elevated element needs a shadow
+- ✅ For headers: dark glass over a gradient, not a flat color bar
+
+### 3. Premium Typography
+
+```css
+/* Import TWO complementary font families */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap');
+
+/* Use fluid type scale — NEVER hardcode px for body text */
+body { font-family: 'Inter', sans-serif; font-size: var(--text-base); }
+h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+h1 { font-size: var(--text-3xl); font-weight: 700; letter-spacing: -0.03em; }
+h2 { font-size: var(--text-xl); font-weight: 600; }
+```
+
+**Rules:**
+- Use `clamp()` for all font sizes — no breakpoint-dependent sizes
+- Heading letter-spacing should be negative (`-0.02em` to `-0.04em`)
+- Body letter-spacing should be neutral or slightly positive
+- Line height: 1.2 for headings, 1.6 for body text
+
+### 4. Micro-animations & Interactive States
+
+**Every interactive element MUST have animated feedback.** This is non-negotiable for premium feel.
+
+```css
+/* Base transition for ALL interactive elements */
+.interactive {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Buttons: lift + glow on hover */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+}
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* Cards: subtle lift on hover */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Inputs: glow ring on focus */
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 4px rgba(0,100,255,0.12);
+  transform: scale(1.01);
+}
+
+/* Entrance animations (use sparingly) */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+```
+
+### 5. Color Palette Guidelines for Health Apps
+
+For health/nutrition calculators, follow this emotional color mapping:
+
+| Purpose | Color Range | Example |
+|---------|-------------|---------|
+| Primary brand | Deep blue / teal | `oklch(0.55 0.15 240)` |
+| Trust / safety | Soft blue | `oklch(0.80 0.08 240)` |
+| Success / healthy | Emerald green | `oklch(0.65 0.18 155)` |
+| Warning / caution | Amber / gold | `oklch(0.78 0.14 80)` |
+| Danger / deficit | Coral / rose | `oklch(0.65 0.15 25)` |
+| Surfaces | Off-white → warm gray gradient | `oklch(0.97 0.005 250)` |
+
+**Rules:**
+- Header/hero: use dark glass or deep gradient, NOT a flat saturated blue
+- Background: subtle warm/cool gradient, never pure white
+- Cards: white or near-white glass with generous blur
+- Data cards (results): gradient backgrounds that feel alive, not flat boxes
+
+### 6. Layout & Spacing
+
+```css
+/* Use consistent spacing tokens everywhere */
+.section { padding: var(--space-2xl) var(--space-xl); }
+.card    { padding: var(--space-lg); border-radius: var(--radius-lg); }
+.stack > * + * { margin-top: var(--space-md); }
+
+/* Desktop: max ~1100px container, generous padding */
+/* Mobile: collapse to single column, reduce padding */
+```
+
+**Rules:**
+- Minimum 16px gap between adjacent cards
+- Generous internal padding (24px+ for cards)
+- Headers: at least 3rem vertical padding
+- Footer: subtle, not overpowering — use lighter tones or transparency
+
+### 7. Accessibility (WCAG 2.2 AA)
+
+- All text must meet 4.5:1 contrast ratio (3:1 for large text)
+- All interactive elements need visible `:focus-visible` outlines
+- Use semantic HTML (`<header>`, `<main>`, `<footer>`, `<section>`)
+- Images must have descriptive `alt` text
+- Form labels must be associated with their inputs
+
+### 8. Responsive & Mobile-First
+
+- Design for 375px first, then 768px, then 1024px+
+- Use `clamp()` for fluid sizing instead of breakpoint jumps
+- Stack columns on mobile, grid on desktop
+- Touch targets: minimum 44×44px
 
 ## Project Setup
 

@@ -1,0 +1,49 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Palau Yellow Flame Gradient -->
+    <linearGradient id="flame_grad" x1="200" y1="320" x2="200" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF93D"/> <!-- Bright Yellow -->
+      <stop offset="0.5" stop-color="#F2D53C"/> <!-- Mid Yellow -->
+      <stop offset="1" stop-color="#E4C859"/> <!-- Palau Gold -->
+    </linearGradient>
+    
+    <!-- Glow Effect for the Flame -->
+    <filter id="flame_glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Blue Glow for the Pulse -->
+    <filter id="pulse_glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- RECOGNIZABLE FLAME SHAPE (Central Energy/TDEE Element) -->
+  <path d="M200 340 
+           C140 340, 100 280, 100 220 
+           C100 140, 160 80, 200 60 
+           C200 60, 210 120, 180 160 
+           C210 140, 260 160, 260 220 
+           C260 280, 240 340, 200 340 Z" 
+        fill="url(#flame_grad)" filter="url(#flame_glow)">
+    <animate attributeName="d" 
+             values="M200 340 C140 340, 100 280, 100 220 C100 140, 160 80, 200 60 C200 60, 210 120, 180 160 C210 140, 260 160, 260 220 C260 280, 240 340, 200 340 Z;
+                     M200 345 C135 345, 95 285, 95 225 C95 145, 165 85, 200 65 C200 65, 215 125, 185 165 C215 145, 265 165, 265 225 C265 285, 245 345, 200 345 Z;
+                     M200 340 C140 340, 100 280, 100 220 C100 140, 160 80, 200 60 C200 60, 210 120, 180 160 C210 140, 260 160, 260 220 C260 280, 240 340, 200 340 Z" 
+             dur="2s" repeatCount="indefinite" />
+  </path>
+
+  <!-- ECG PULSE LINE (Health/Activity Element - White for contrast on blue header) -->
+  <path d="M50 250 H130 L145 220 L165 280 L195 160 L220 300 L240 220 L260 250 H350" 
+        stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="url(#pulse_glow)">
+    <animate attributeName="stroke-dasharray" values="0,1000; 1000,1000" dur="2.5s" repeatCount="indefinite" />
+  </path>
+
+  <!-- Inner Spark (White) -->
+  <path d="M200 300 C170 300, 150 270, 150 240 C150 200, 180 170, 200 150 C200 150, 190 200, 210 210 C190 220, 230 240, 230 270 C230 290, 220 300, 200 300 Z" 
+        fill="white" fill-opacity="0.6">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite" />
+  </path>
+</svg>
